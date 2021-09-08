@@ -6,9 +6,11 @@ namespace NonlinearEquationRootFinder
     {
         static void Main(string[] args)
         {
-            var rootFinder = new RootFinder(x => Math.Pow(2, -x) - Math.Sin(x), new Segment(-5, 10), 0.000001, 100);
-            rootFinder.SeparateRoots();
-            rootFinder.ClarifyRootsUsingBisection();
+            static double function(double x) => Math.Pow(2, -x) - Math.Sin(x);
+            static double derivative1(double x) => -Math.Cos(x) - Math.Log(2, Math.E) / Math.Pow(2, x);
+            static double derivative2(double x) => Math.Sin(x) - Math.Pow(Math.Log(2, Math.E), 2) / Math.Pow(2, x);
+            var rootFinder = new RootFinder(function, derivative1, derivative2, new Segment(-5, 10), 0.000001, 100);
+            rootFinder.FindRoots();
         }
     }
 }

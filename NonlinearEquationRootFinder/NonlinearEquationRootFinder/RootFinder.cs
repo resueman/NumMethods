@@ -5,152 +5,199 @@ namespace NonlinearEquationRootFinder
 {
     class RootFinder
     {
-        private Func<double, double> function; 
-        private Func<double, double> derivative1; 
-        private Func<double, double> derivative2;
+        private readonly Func<double, double> function; 
+        private readonly Func<double, double> derivative1; 
+        private readonly Func<double, double> derivative2;
 
-        private Segment rootsFindingSegment;
-        private double precision;
-        private double clarificationStepLength;
+        private readonly Segment rootsFindingSegment;
+        private readonly double precision;
+        private readonly double clarificationStepLength;
 
-        public List<Segment> RootContainingSegments { get; private set; }
-        public List<double> Roots { get; private set; }
-
-        public RootFinder(Func<double, double> func, 
+        public RootFinder(Func<double, double> function, 
             Func<double, double> derivative1, Func<double, double> derivative2,
             Segment segment, double precision, int clarificationStepCount)
         {
-            function = func;
+            this.function = function;
             this.derivative1 = derivative1;
             this.derivative2 = derivative2;
             rootsFindingSegment = segment;
             this.precision = precision;
             clarificationStepLength = (segment.Right - segment.Left) / clarificationStepCount;
-            RootContainingSegments = new List<Segment>();
-            Roots = new List<double>();
+        }
+
+        private void PrintResults(List<RootAnalytics> analytics)
+        {
+            var counter = 1;
+            foreach (var result in analytics)
+            {
+                Console.WriteLine($"Отрезок {counter}: [{result.Segment.Left.ToFormattedString(3)}; {result.Segment.Right.ToFormattedString(3)}]");
+                Console.WriteLine($"Начальное приближение: {result.InitialApproximationToTheRoot[0].ToFormattedString()}");
+                Console.WriteLine($"Число шагов: {result.StepsCounts}");
+                Console.WriteLine($"Приближенное решение: {result.FinalApproximationToTheRoot.ToFormattedString()}");
+                Console.WriteLine($"|x_n - x_(n-1)|: {result.LengthOfLastApproximationSegment.ToFormattedString()}");
+                Console.WriteLine($"Абсолютная величина невязки: {result.DiscrepancyAbsoluteValue.ToFormattedString()}");
+                Console.WriteLine();
+                ++counter;
+            }
         }
 
         public void FindRoots()
         {
-            SeparateRoots();
-            ClarifyRootsUsingBisection();
-            ClarifyRootsUsingNewtonMethod();
-            ClarifyRootsUsingModifiedNewtonMethod();
-            ClarifyRootsUsingSecantMethod();
+            var equation = "2^(-x) - sin(x)";
+            Console.WriteLine($"ЧИСЛЕННЫЕ МЕТОДЫ РЕШЕНИЯ НЕЛИНЕЙНЫХ УРАВНЕНИЙ\n");
+            Console.WriteLine($"ИСХОДНЫЕ ПАРАМЕТРЫ:");
+            Console.WriteLine($"Функция: {equation}");
+            Console.WriteLine($"Отрезок поиска решений: [{rootsFindingSegment.Left}; {rootsFindingSegment.Right}]");
+            Console.WriteLine($"Точность: {precision}\n");
+            
+            Console.WriteLine($"РЕЗУЛЬТАТ ПРОЦЕДУРЫ ОТДЕЛЕНИЯ КОРНЕЙ:\n");
+            var segments = SeparateRoots();
+            Console.WriteLine($"Число промежутков перемены знака: {segments.Count}\n");
+            Console.WriteLine($"Отрезки, принадлежащие [{rootsFindingSegment.Left}; {rootsFindingSegment.Right}], каждый из которых содержит единственный корень:");
+            foreach (var segment in segments)
+            {
+                Console.WriteLine($"[{segment.Left}; {segment.Right}]");
+            }
+            Console.WriteLine();
+
+            var bisectionAnalytics = ClarifyRootsUsingBisection(segments);
+            Console.WriteLine("---------------------------------------------");
+            Console.WriteLine($"РЕЗУЛЬТАТ УТОЧНЕНИЯ КОРНЕЙ МЕТОДОМ БИСЕКЦИИ:\n");
+            Console.WriteLine("---------------------------------------------");
+            PrintResults(bisectionAnalytics);
+
+            var newtonsAnalytics = ClarifyRootsUsingNewtonMethod(segments);
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine($"РЕЗУЛЬТАТ УТОЧНЕНИЯ КОРНЕЙ МЕТОДОМ НЬЮТОНА:\n");
+            Console.WriteLine("--------------------------------------------");
+            PrintResults(newtonsAnalytics);
+
+            var modifiedNewtonsAnalytics = ClarifyRootsUsingModifiedNewtonMethod(segments);
+            Console.WriteLine("------------------------------------------------------------");
+            Console.WriteLine($"РЕЗУЛЬТАТ УТОЧНЕНИЯ КОРНЕЙ МОДИФИЦИРОВАННЫМ МЕТОДОМ НЬЮТОНА:\n");
+            Console.WriteLine("------------------------------------------------------------");
+            PrintResults(modifiedNewtonsAnalytics);
+
+            var secantMethodAnalytics = ClarifyRootsUsingSecantMethod(segments);
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine($"РЕЗУЛЬТАТ УТОЧНЕНИЯ КОРНЕЙ МЕТОДОМ СЕКУЩИХ:\n");
+            Console.WriteLine("--------------------------------------------");
+            PrintResults(secantMethodAnalytics);
         }
 
-        private void SeparateRoots()
+        private List<Segment> SeparateRoots()
         {
+            var rootContainingSegments = new List<Segment>();
             for (var left = rootsFindingSegment.Left; left < rootsFindingSegment.Right; left += clarificationStepLength)
             {
                 var right = Math.Min(left + clarificationStepLength, rootsFindingSegment.Right);
                 if (function(left) * function(right) <= 0)
                 {
-                    RootContainingSegments.Add(new Segment(left, right));
+                    rootContainingSegments.Add(new Segment(left, right));
                 }
             }
+            return rootContainingSegments;
         }
 
-        private void ClarifyRootsUsingBisection()
+        private List<RootAnalytics> ClarifyRootsUsingBisection(List<Segment> segments)
         {
-            var roots = new List<double>();
-            foreach (var segment in RootContainingSegments)
+            var rootAnalytics = new List<RootAnalytics>();
+            foreach (var segment in segments)
             {
                 var l = segment.Left;
                 var r = segment.Right;
-                
-                if (Math.Abs(function(l)) <= precision)
+                var initialApproximationToTheRoot = (l + r) / 2;
+                var stepsCount = 0;
+                var center = initialApproximationToTheRoot;
+                while (Math.Abs(r - l) > 2 * precision)
                 {
-                    roots.Add(l);
-                    continue;
-                }
-
-                if (Math.Abs(function(r)) <= precision)
-                {
-                    roots.Add(r);
-                    continue;
-                }
-
-                while (r - l > 2 * precision)
-                {
-                    var m = (r + l) / 2;
-                    if (function(l) * function(m) <= 0)
+                    if (function(l) * function(center) <= 0)
                     {
-                        r = m;
-                        continue;
+                        r = center;
                     }
-                    l = m;
+                    else
+                    {
+                        l = center;
+                    }
+                    center = (r + l) / 2;
+                    ++stepsCount;
                 }
                 var root = (r + l) / 2;
-                roots.Add(root);
+                var disrepencyAbsoluteValue = Math.Abs(function(root));
+                var analytics = new RootAnalytics(segment, new List<double> { initialApproximationToTheRoot }, stepsCount, root, Math.Abs(r - l), disrepencyAbsoluteValue);
+                rootAnalytics.Add(analytics);
             }
+            return rootAnalytics;
         }
 
-        private void ClarifyRootsUsingNewtonMethod()
+        private List<RootAnalytics> ClarifyRootsUsingNewtonMethod(List<Segment> segments)
         {
-            var roots = new List<double>();
-            foreach (var segment in RootContainingSegments)
+            var rootAnalytics = new List<RootAnalytics>();
+            foreach (var segment in segments)
             {
                 var random = new Random();
                 bool success;
                 do
                 {
                     var x_0 = segment.Left + random.NextDouble() * (segment.Right - segment.Left);
-                    success = TryClarifyRootUsingNewtonMethod(x_0, out var root);
-                    if (success) roots.Add(root);
+                    success = TryClarifyRootUsingNewtonMethod(x_0, segment, out var analytics);
+                    if (success) rootAnalytics.Add(analytics);
                 } while (!success);
             }
+            return rootAnalytics;
         }
 
-        private bool TryClarifyRootUsingNewtonMethod(double x_0, out double root)
+        private bool TryClarifyRootUsingNewtonMethod(double x_0, Segment segment, out RootAnalytics analytics)
         {
-            root = rootsFindingSegment.Left - 10;            
-            if (function(x_0) * derivative2(x_0) > 0)
+            analytics = null;          
+            if (function(x_0) * derivative2(x_0) <= 0)
             {
-                throw new Exception("Не выполнено условие сходимости");
+                return false;
             }
 
             var prev = x_0;
             var curr = prev - function(prev) / derivative1(prev);
+            var stepCount = 0;
             while (Math.Abs(curr - prev) > precision)
             {
                 try
                 {
-                    var tmp = curr;
+                    prev = curr;
                     curr = prev - function(prev) / derivative1(prev);
-                    prev = tmp;
+                    ++stepCount;
                 }
                 catch (DivideByZeroException)
                 {
                     return false;
                 }
             }
-            root = curr;
+            analytics = new RootAnalytics(segment, new List<double> { x_0 }, stepCount, curr, Math.Abs(curr - prev), Math.Abs(function(curr)));
             return true;
-        } 
+        }
 
-        private void ClarifyRootsUsingModifiedNewtonMethod()
+        private List<RootAnalytics> ClarifyRootsUsingModifiedNewtonMethod(List<Segment> segments)
         {
-            var roots = new List<double>();
-            foreach (var segment in RootContainingSegments)
+            var rootAnalytics = new List<RootAnalytics>();
+            foreach (var segment in segments)
             {
                 var random = new Random();
                 bool success;
                 do
                 {
                     var x_0 = segment.Left + random.NextDouble() * (segment.Right - segment.Left);
-                    success = TryClarifyRootUsingModifiedNewtonMethod(x_0, out var root);
-                    if (success) roots.Add(root);
+                    success = TryClarifyRootUsingModifiedNewtonMethod(x_0, segment, out var analytics);
+                    if (success) rootAnalytics.Add(analytics);
                 } while (!success);
             }
+            return rootAnalytics;
         }
 
-        private bool TryClarifyRootUsingModifiedNewtonMethod(double x_0, out double root)
+        private bool TryClarifyRootUsingModifiedNewtonMethod(double x_0, Segment segment, out RootAnalytics analytics)
         {
-            root = rootsFindingSegment.Left - 10;
-            if (function(x_0) * derivative2(x_0) > 0)
+            analytics = null;
+            if (function(x_0) * derivative2(x_0) <= 0)
             {
-                 throw new Exception("Не выполнено условие сходимости");
+                return false;
             }
 
             var x_0_derivative = derivative1(x_0);
@@ -161,20 +208,21 @@ namespace NonlinearEquationRootFinder
 
             var prev = x_0;
             var curr = prev - function(prev) / x_0_derivative;
+            var stepsCount = 0;
             while (Math.Abs(curr - prev) > precision)
             {
-                var tmp = curr;
+                prev = curr;
                 curr = prev - function(prev) / x_0_derivative;
-                prev = tmp;
+                ++stepsCount;
             }
-            root = curr;
+            analytics = new RootAnalytics(segment, new List<double> { x_0 }, stepsCount, curr, Math.Abs(curr - prev), Math.Abs(function(curr)));
             return true;
         }
 
-        private void ClarifyRootsUsingSecantMethod()
+        private List<RootAnalytics> ClarifyRootsUsingSecantMethod(List<Segment> segments)
         {
-            var roots = new List<double>();
-            foreach (var segment in RootContainingSegments)
+            var rootAnalytics = new List<RootAnalytics>();
+            foreach (var segment in segments)
             {
                 var random = new Random();
                 bool success;
@@ -184,15 +232,16 @@ namespace NonlinearEquationRootFinder
                     var x_1 = segment.Left + random.NextDouble() * (segment.Right - segment.Left);
                     x_0 = Math.Min(x_0, x_1);
                     x_1 = Math.Max(x_0, x_1);
-                    success = TryClarifyRootUsingSecantMethod(x_0, x_1, out var root);
-                    if (success) roots.Add(root);
+                    success = TryClarifyRootUsingSecantMethod(x_0, x_1, segment, out var analytics);
+                    if (success) rootAnalytics.Add(analytics);
                 } while (!success);
             }
+            return rootAnalytics;
         }
 
-        private bool TryClarifyRootUsingSecantMethod(double x_0, double x_1, out double root)
+        private bool TryClarifyRootUsingSecantMethod(double x_0, double x_1, Segment segment, out RootAnalytics analytics)
         {
-            root = rootsFindingSegment.Left - 10;
+            analytics = null;
             if (x_0 == x_1)
             {
                 return false;
@@ -200,18 +249,19 @@ namespace NonlinearEquationRootFinder
             var prev = x_0;
             var curr = x_1;
             var next = curr - function(curr) * (curr - prev) / (function(curr) - function(prev));
+            var stepsCount = 0;
             while (Math.Abs(curr - prev) > precision)
             {
-                var tmpNext = next;
                 if (function(curr) - function(prev) == 0)
                 {
                     return false;
                 }
-                next = curr - function(curr) * (curr - prev) / (function(curr) - function(prev));
                 prev = curr;
-                curr = tmpNext;
+                curr = next;
+                next = curr - function(curr) * (curr - prev) / (function(curr) - function(prev));
+                ++stepsCount;
             }
-            root = next;
+            analytics = new RootAnalytics(segment, new List<double> { x_0, x_1 }, stepsCount, next, Math.Abs(next - curr), Math.Abs(function(next)));
             return true;
         }
     }
