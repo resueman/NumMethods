@@ -14,6 +14,10 @@ namespace NonlinearEquationRootFinder
         private readonly int separationStepCount;
         private readonly double separationStepLength;
 
+        private const double NewtonsMethodMaxIterations = 50;
+        private const double modifiedNewtonsMethodMaxIterations = 50;
+        private const double secantMethodMaxIterations = 50;
+
         public RootFinder(Func<double, double> function, 
             Func<double, double> derivative1, Func<double, double> derivative2,
             Segment segment, double precision, int separationStepCount)
@@ -53,13 +57,13 @@ namespace NonlinearEquationRootFinder
             Console.WriteLine("---------------------------------------------");
             PrintResults(bisectionAnalytics);
 
-            var newtonsAnalytics = ClarifyRootsUsingNewtonMethod(segments);
+            var newtonsAnalytics = ClarifyRootsUsingNewtonsMethod(segments);
             Console.WriteLine("--------------------------------------------");
             Console.WriteLine($"РЕЗУЛЬТАТ УТОЧНЕНИЯ КОРНЕЙ МЕТОДОМ НЬЮТОНА:\n");
             Console.WriteLine("--------------------------------------------");
             PrintResults(newtonsAnalytics);
 
-            var modifiedNewtonsAnalytics = ClarifyRootsUsingModifiedNewtonMethod(segments);
+            var modifiedNewtonsAnalytics = ClarifyRootsUsingModifiedNewtonsMethod(segments);
             Console.WriteLine("------------------------------------------------------------");
             Console.WriteLine($"РЕЗУЛЬТАТ УТОЧНЕНИЯ КОРНЕЙ МОДИФИЦИРОВАННЫМ МЕТОДОМ НЬЮТОНА:\n");
             Console.WriteLine("------------------------------------------------------------");
@@ -112,8 +116,12 @@ namespace NonlinearEquationRootFinder
                 var initialApproximationToTheRoot = (l + r) / 2;
                 var stepsCount = 0;
                 var center = initialApproximationToTheRoot;
-                while (Math.Abs(function(center)) > precision && r - l > 2 * precision)
+                while (r - l > 2 * precision)
                 {
+                    if (Math.Abs(function(center)) < precision)
+                    {
+                        break;
+                    }
                     if (function(l) * function(center) <= 0)
                     {
                         r = center;
@@ -132,7 +140,7 @@ namespace NonlinearEquationRootFinder
             return rootAnalytics;
         }
 
-        private List<RootClarifierMethodAnalytics> ClarifyRootsUsingNewtonMethod(List<Segment> segments)
+        private List<RootClarifierMethodAnalytics> ClarifyRootsUsingNewtonsMethod(List<Segment> segments)
         {
             var rootAnalytics = new List<RootClarifierMethodAnalytics>();
             foreach (var segment in segments)
@@ -142,14 +150,14 @@ namespace NonlinearEquationRootFinder
                 do
                 {
                     var x_0 = segment.Left + random.NextDouble() * (segment.Right - segment.Left);
-                    success = TryClarifyRootUsingNewtonMethod(x_0, segment, out var analytics);
+                    success = TryClarifyRootUsingNewtonsMethod(x_0, segment, out var analytics);
                     if (success) rootAnalytics.Add(analytics);
                 } while (!success);
             }
             return rootAnalytics;
         }
 
-        private bool TryClarifyRootUsingNewtonMethod(double x_0, Segment segment, out RootClarifierMethodAnalytics analytics)
+        private bool TryClarifyRootUsingNewtonsMethod(double x_0, Segment segment, out RootClarifierMethodAnalytics analytics)
         {
             analytics = null;          
             if (function(x_0) * derivative2(x_0) <= 0)
@@ -159,25 +167,29 @@ namespace NonlinearEquationRootFinder
 
             var prev = x_0;
             var curr = prev - function(prev) / derivative1(prev);
-            var stepCount = 0;
+            var stepsCount = 0;
             while (Math.Abs(curr - prev) > precision)
             {
+                if (NewtonsMethodMaxIterations < stepsCount)
+                {
+                    return false;
+                }
                 try
                 {
                     prev = curr;
                     curr = prev - function(prev) / derivative1(prev);
-                    ++stepCount;
+                    ++stepsCount;
                 }
                 catch (DivideByZeroException)
                 {
                     return false;
                 }
             }
-            analytics = new RootClarifierMethodAnalytics(segment, new List<double> { x_0 }, stepCount, curr, Math.Abs(curr - prev), Math.Abs(function(curr)));
+            analytics = new RootClarifierMethodAnalytics(segment, new List<double> { x_0 }, stepsCount, curr, Math.Abs(curr - prev), Math.Abs(function(curr)));
             return true;
         }
 
-        private List<RootClarifierMethodAnalytics> ClarifyRootsUsingModifiedNewtonMethod(List<Segment> segments)
+        private List<RootClarifierMethodAnalytics> ClarifyRootsUsingModifiedNewtonsMethod(List<Segment> segments)
         {
             var rootAnalytics = new List<RootClarifierMethodAnalytics>();
             foreach (var segment in segments)
@@ -187,14 +199,14 @@ namespace NonlinearEquationRootFinder
                 do
                 {
                     var x_0 = segment.Left + random.NextDouble() * (segment.Right - segment.Left);
-                    success = TryClarifyRootUsingModifiedNewtonMethod(x_0, segment, out var analytics);
+                    success = TryClarifyRootUsingModifiedNewtonsMethod(x_0, segment, out var analytics);
                     if (success) rootAnalytics.Add(analytics);
                 } while (!success);
             }
             return rootAnalytics;
         }
 
-        private bool TryClarifyRootUsingModifiedNewtonMethod(double x_0, Segment segment, out RootClarifierMethodAnalytics analytics)
+        private bool TryClarifyRootUsingModifiedNewtonsMethod(double x_0, Segment segment, out RootClarifierMethodAnalytics analytics)
         {
             analytics = null;
             if (function(x_0) * derivative2(x_0) <= 0)
@@ -208,6 +220,10 @@ namespace NonlinearEquationRootFinder
             var stepsCount = 0;
             while (Math.Abs(curr - prev) > precision)
             {
+                if (modifiedNewtonsMethodMaxIterations < stepsCount)
+                {
+                    return false;
+                }
                 try
                 {
                     prev = curr;
@@ -256,6 +272,10 @@ namespace NonlinearEquationRootFinder
             var stepsCount = 0;
             while (Math.Abs(curr - prev) > precision)
             {
+                if (secantMethodMaxIterations < stepsCount)
+                {
+                    return false;
+                }
                 try
                 {
                     prev = curr;
