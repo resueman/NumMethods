@@ -2,9 +2,9 @@
 
 namespace NonlinearEquationRootFinder
 {
-    class RootAnalytics
+    class RootClarifierMethodAnalytics
     {
-        public RootAnalytics(Segment segment, List<double> initialApproximationToTheRoot, 
+        public RootClarifierMethodAnalytics(Segment segment, List<double> initialApproximationToTheRoot, 
             int stepsCounts, double finalApproximationToTheRoot, double lengthOfLastApproximationSegment,
             double discrepancyAbsoluteValue)
         {
