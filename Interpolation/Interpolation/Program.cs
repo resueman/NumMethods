@@ -1,13 +1,11 @@
-﻿using System;
-
-namespace Interpolation
+﻿namespace Interpolation
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            
-            
+            var interpolationProgram = new InterpolationProgram();
+            interpolationProgram.Start();
         }
     }
 }

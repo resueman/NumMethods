@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Interpolation
 {
-    class Interpolation
+    class InterpolationProgram
     {
         private Func<double, double> function = x => Math.Log(1 + x, Math.E);
         private Segment segment = new Segment(0, 1);
@@ -11,13 +12,28 @@ namespace Interpolation
         private int polynomialDegree = 7; // n
         private double x = 0.35;
 
-        public Interpolation(Func<double, double> function, Segment segment, int maxNodeNumber, int polynomialDegree, double x)
+        private Dictionary<double, double> tableWithPredefinedValues;
+        private Dictionary<double, double> nearestSortedNodesValuesTable;
+
+        private LagrangePolynomial polynomialOfLagrange;
+        private double valueOfLagrangeInX;
+        private double actualInaccuracyOfLagrange;
+
+        private NewtonsPolynomial polynomialOfNewtons;
+        private double valueOfNewtonsInX;
+        private double actualInaccuracyOfNewtons;
+
+        public InterpolationProgram(Func<double, double> function, Segment segment, int maxNodeNumber, int polynomialDegree, double x)
         {
             this.function = function;
             this.segment = segment;
             this.maxNodeNumber = maxNodeNumber;
             this.polynomialDegree = polynomialDegree;
             this.x = x;
+        }
+
+        public InterpolationProgram()
+        {
         }
 
         public void Start()
@@ -35,11 +51,23 @@ namespace Interpolation
                     ReadPolynomialDegree();
                     ReadX();
                 }
-                var tableWithPredefinedValues = BuildATableWithPredefinedValues();
+
+                tableWithPredefinedValues = BuildATableWithPredefinedValues();
+                nearestSortedNodesValuesTable = GetNearestSortedNodesValuesTable(tableWithPredefinedValues, x, polynomialDegree);
+                
+                polynomialOfLagrange = new LagrangePolynomial(nearestSortedNodesValuesTable, function);                
+                valueOfLagrangeInX = polynomialOfLagrange.GetValue(x);
+                actualInaccuracyOfLagrange = polynomialOfLagrange.GetActualInaccuracy(x);
+
+                polynomialOfNewtons = new NewtonsPolynomial(nearestSortedNodesValuesTable, function);
+                valueOfNewtonsInX = polynomialOfNewtons.GetValue(x);
+                actualInaccuracyOfNewtons = polynomialOfNewtons.GetActualInaccuracy(x);
+
+                PrintResults();
             }
         }
 
-        private bool WouldEnterParameters()
+        private static bool WouldEnterParameters()
         {
             Console.WriteLine("Хотите ли вы ввести параметры? Введите 'Да' или 'Нет'");
             var userChoice = Console.ReadLine();
@@ -156,30 +184,39 @@ namespace Interpolation
             return table;
         }
 
-        public void Start1()
+        private static Dictionary<double, double> GetNearestSortedNodesValuesTable(Dictionary<double, double> table, double x, int polynomialDegree)
         {
-            Console.WriteLine($"Число значений в таблице: {maxNodeNumber + 1}"); 
-            Console.WriteLine(""); // исходная таблица значений функции 
-            Console.WriteLine($"Точка интерполирования {x}");
-            Console.WriteLine($"Степень многочлена n: {polynomialDegree}");
-            Console.WriteLine(""); // отсортированная таблица, набор ближайших узлов, по к-м будет строиться многочлен степени не выше n
-            Console.WriteLine(""); // значение интерполяционнго многочлена в форме Лагранжа в х
-            Console.WriteLine(""); // абсолютная фактическая погрешность для формы Лагранжа
-            Console.WriteLine(""); // значение интерполяционнго многочлена в форме Ньютона в х
-            Console.WriteLine(""); // абсолютная фактическая погрешность для формы Ньютона
+            var sortedTable = table.OrderBy(x_i => Math.Abs(x - x_i.Key)).ToList();
+            sortedTable.RemoveRange(polynomialDegree + 1, sortedTable.Count - polynomialDegree - 1);
+            return sortedTable.ToDictionary(p => p.Key, p => p.Value);
+        }
+
+        private void PrintResults()
+        {
+            Console.WriteLine($"Число значений в таблице: {maxNodeNumber + 1}");
             
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
+            Console.WriteLine("Исходная таблица значений функции:");
+            PrintTable(tableWithPredefinedValues);
+            
+            Console.WriteLine($"Точка интерполирования {x}");
+            
+            Console.WriteLine($"Степень многочлена n: {polynomialDegree}");
+            
+            Console.WriteLine("Отсортированная таблица из ближайших к Х узлов и их значений, по которым строятся многочлены Лагранжа и Ньютона");
+            PrintTable(nearestSortedNodesValuesTable);
+            
+            Console.WriteLine($"Значение интерполяционнго многочлена в форме Лагранжа в Х: {valueOfLagrangeInX}");
+            Console.WriteLine($"Абсолютная фактическая погрешность для формы Лагранжа: {actualInaccuracyOfLagrange}");
+            Console.WriteLine($"Значение интерполяционнго многочлена в форме Ньютона в Х: {valueOfNewtonsInX}");
+            Console.WriteLine($"Абсолютная фактическая погрешность для формы Ньютона: {actualInaccuracyOfNewtons}");
+        }
+
+        private static void PrintTable(Dictionary<double, double> table)
+        {
+            foreach (var key in table.Keys.OrderBy(k => k))
+            {
+                Console.WriteLine($"{key.ToFormattedString(4)} {table[key].ToFormattedString(8)}");
+            }
         }
     }
 }
