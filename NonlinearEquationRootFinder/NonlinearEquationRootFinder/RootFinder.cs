@@ -118,10 +118,6 @@ namespace NonlinearEquationRootFinder
                 var center = initialApproximationToTheRoot;
                 while (r - l > 2 * precision)
                 {
-                    if (Math.Abs(function(center)) < precision)
-                    {
-                        break;
-                    }
                     if (function(l) * function(center) <= 0)
                     {
                         r = center;
@@ -270,7 +266,7 @@ namespace NonlinearEquationRootFinder
             var curr = x_1;
             var next = curr - function(curr) * (curr - prev) / (function(curr) - function(prev));
             var stepsCount = 0;
-            while (Math.Abs(curr - prev) > precision)
+            while (Math.Abs(next - curr) > precision)
             {
                 if (secantMethodMaxIterations < stepsCount)
                 {
