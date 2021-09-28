@@ -196,11 +196,10 @@ namespace Interpolation
         }
 
         private static Dictionary<double, double> GetNearestSortedNodesValuesTable(Dictionary<double, double> table, double x, int polynomialDegree)
-        {
-            var sortedTable = table.OrderBy(x_i => Math.Abs(x - x_i.Key)).ToList();
-            sortedTable.RemoveRange(polynomialDegree + 1, sortedTable.Count - polynomialDegree - 1);
-            return sortedTable.ToDictionary(p => p.Key, p => p.Value);
-        }
+            => table
+                .OrderBy(x_i => Math.Abs(x - x_i.Key))
+                .Take(polynomialDegree + 1)
+                .ToDictionary(p => p.Key, p => p.Value);
 
         private void PrintResults()
         {
