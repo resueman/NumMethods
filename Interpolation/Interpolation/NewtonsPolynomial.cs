@@ -6,13 +6,18 @@ namespace Interpolation
 {
     class NewtonsPolynomial : IPolynomial
     {
+        private double? value;
+
         public NewtonsPolynomial(IEnumerable<KeyValuePair<double, double>> nearestSortedNodesValuesTable, Func<double, double> function)
         {
             SortedTable = nearestSortedNodesValuesTable.ToList();
+            BuildTableOfDividedDifferences();
             Function = function;
         }
 
         public List<KeyValuePair<double, double>> SortedTable { get; private set; }
+
+        public List<List<double>> DividedDifferencesTable { get; private set; }
 
         public Func<double, double> Function { get; private set; }
 
@@ -20,32 +25,52 @@ namespace Interpolation
 
         public double GetValue(double x)
         {
-            var coefficients = Get_A_i_Coefficients();
-            var value = coefficients[0];
-            for (var i = 1; i < coefficients.Count; ++i)
+            if (value != null)
             {
-                var coeficient = 1.0;
+                return (double)value;
+            }
+
+            var v = 0.0;
+            for (var i = 0; i < SortedTable.Count; ++i)
+            {
+                var coefficient = 1.0;
                 for (var j = 0; j < i; ++j)
                 {
-                    coeficient *= x - SortedTable[j].Key;
+                    coefficient *= x - SortedTable[j].Key;
                 }
-                value += coeficient * coefficients[i];
+                v += DividedDifferencesTable[0][i] * coefficient;
             }
-            return value;
+            value = v;
+
+            return (double)value;
         }
 
-        private List<double> Get_A_i_Coefficients()
+        private void BuildTableOfDividedDifferences()
         {
-            var x_i_minus_1 = SortedTable[0].Key;
-            var f_i_minus_1 = SortedTable[0].Value;
-            var A_0 = SortedTable[0].Value;
-            var coefficients = new List<double> { A_0 };
-            for (var i = 1; i < SortedTable.Count; ++i)
+            DividedDifferencesTable = new List<List<double>>();
+            for (var i = 0; i < SortedTable.Count; ++i)
             {
-                var A_i = (SortedTable[i].Value - f_i_minus_1) / (SortedTable[i].Key - x_i_minus_1);
-                coefficients.Add(A_i);
+                DividedDifferencesTable.Add(new List<double>());
+                for (var j = 0; i + j < SortedTable.Count; ++j)
+                {
+                    DividedDifferencesTable[i].Add(0);
+                }
             }
-            return coefficients;
+
+            for (var i = 0; i < SortedTable.Count; ++i)
+            {
+                DividedDifferencesTable[i][0] = SortedTable[i].Value;
+            }
+
+            for (var j = 1; j < SortedTable.Count; ++j)
+            {
+                for (var i = 0; i + j < SortedTable.Count; ++i)
+                {
+                    DividedDifferencesTable[i][j] = (DividedDifferencesTable[i + 1][j - 1] - DividedDifferencesTable[i][j - 1]) /
+                        (SortedTable[i + j].Key - SortedTable[i].Key);
+                }
+            }
         }
+
     }
 }

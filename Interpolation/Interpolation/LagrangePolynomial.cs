@@ -6,6 +6,8 @@ namespace Interpolation
 {
     class LagrangePolynomial : IPolynomial
     {
+        private double? value;
+
         public LagrangePolynomial(IEnumerable<KeyValuePair<double, double>> nearestSortedNodesValuesTable, Func<double, double> function)
         {
             SortedTable = nearestSortedNodesValuesTable.ToList();
@@ -20,21 +22,27 @@ namespace Interpolation
 
         public double GetValue(double x)
         {
-            var value = 0.0;
+            if (value != null)
+            {
+                return (double)value;
+            }
+
+            var v = 0.0;
             for (var k = 0; k < SortedTable.Count; ++k)
             {
-                var coefficient = 1.0;
+                double coefficient = 1;
                 for (var i = 0; i < SortedTable.Count; ++i)
                 {
-                    if (i == k)
+                    if (i != k)
                     {
-                        continue;
+                        coefficient *= (x - SortedTable[i].Key) / (SortedTable[k].Key - SortedTable[i].Key);
                     }
-                    coefficient *= (x - SortedTable[i].Key) / (SortedTable[k].Key - SortedTable[i].Key);
                 }
-                value += SortedTable[k].Value;
+                v += coefficient * SortedTable[k].Value;
             }
-            return value;
+            value = v;
+
+            return (double)value;
         }
     }
 }

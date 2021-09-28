@@ -23,11 +23,12 @@ namespace Interpolation
         private double valueOfNewtonsInX;
         private double actualInaccuracyOfNewtons;
 
-        public InterpolationProgram(Func<double, double> function, Segment segment, int maxNodeNumber, int polynomialDegree, double x)
+        public InterpolationProgram(Func<double, double> function, Segment segment, int maxInterpolationNodeNumber, 
+            int polynomialDegree, double x)
         {
             this.function = function;
             this.segment = segment;
-            this.maxNodeNumber = maxNodeNumber;
+            this.maxNodeNumber = maxInterpolationNodeNumber;
             this.polynomialDegree = polynomialDegree;
             this.x = x;
         }
@@ -39,7 +40,7 @@ namespace Interpolation
         public void Start()
         {
             Console.WriteLine("ЗАДАЧА АЛГЕБРАИЧЕСКОГО ИНТЕРПОЛИРОВАНИЯ");
-            Console.WriteLine("Вариант: 2");
+            Console.WriteLine("Вариант: 2 --- ln(1 + x)");
 
             while (true)
             {
@@ -47,12 +48,23 @@ namespace Interpolation
                 if (useUserParameters)
                 {
                     ReadSegmentBorders();
-                    ReadMaxNodeNumber();
-                    ReadPolynomialDegree();
-                    ReadX();
+                    ReadMaxInterpolationNodeNumber();
                 }
 
                 tableWithPredefinedValues = BuildATableWithPredefinedValues();
+                Console.WriteLine("Исходная таблица значений функции:");
+                PrintTable(tableWithPredefinedValues);
+
+                if (useUserParameters)
+                {
+                    ReadX();
+                }
+
+                if (useUserParameters)
+                {
+                    ReadPolynomialDegree();
+                }
+
                 nearestSortedNodesValuesTable = GetNearestSortedNodesValuesTable(tableWithPredefinedValues, x, polynomialDegree);
                 
                 polynomialOfLagrange = new LagrangePolynomial(nearestSortedNodesValuesTable, function);                
@@ -64,20 +76,20 @@ namespace Interpolation
                 actualInaccuracyOfNewtons = polynomialOfNewtons.GetActualInaccuracy(x);
 
                 PrintResults();
-            }
+            } 
         }
 
         private static bool WouldEnterParameters()
         {
             Console.WriteLine("Хотите ли вы ввести параметры? Введите 'Да' или 'Нет'");
-            var userChoice = Console.ReadLine();
-            while (userChoice != "Да" && userChoice != "Нет")
+            var userChoice = Console.ReadLine().ToLower();
+            while (userChoice != "да" && userChoice != "нет")
             {
                 Console.WriteLine("Непонятно :)");
                 Console.WriteLine("Хотите ли вы ввести параметры? Введите 'Да' или 'Нет'");
                 userChoice = Console.ReadLine();
             }
-            return userChoice == "Да";
+            return userChoice == "да";
         }
 
         private void ReadSegmentBorders()
@@ -104,21 +116,20 @@ namespace Interpolation
                         {
                             border2 = isADouble ? doubleBorder : isAnInteger ? intBorder : border2;
                         }
-                        Console.WriteLine();
                         break;
                     }
                     Console.WriteLine(errorMessage + $", попробуйте ввести границу {i} еще раз\n");
                 } while (true);
             }
             segment = new Segment(border1, border2);
+            Console.WriteLine();
         }
 
-        private void ReadMaxNodeNumber()
+        private void ReadMaxInterpolationNodeNumber()
         {
             do
             {
-                Console.WriteLine("Введите максимальный номер узла, значение функции в котором " +
-                    "и узлах с номером от 0 до M - 1 будет вычислено точно");
+                Console.Write("Введите максимальный 0-based номер узла интерполирования: ");
                 var isAnInteger = int.TryParse(Console.ReadLine(), out maxNodeNumber);
                 var errorMessage = !isAnInteger 
                     ? "M должно быть вещественным числом" 
@@ -138,8 +149,8 @@ namespace Interpolation
         {
             do
             {
-                Console.WriteLine($"Введите степень N (N <= {maxNodeNumber}) интерполяционного многочлена, " +
-                    $"который будет построен для того чтобы найти значение в точке x");
+                Console.Write($"Введите степень N (N <= {maxNodeNumber}) интерполяционного многочлена, " +
+                    $"который будет построен для того чтобы найти значение в точке x: ");
                 var isAnInteger = int.TryParse(Console.ReadLine(), out polynomialDegree);
                 var errorMessage = !isAnInteger
                     ? "N должно быть целым"
@@ -193,6 +204,7 @@ namespace Interpolation
 
         private void PrintResults()
         {
+            Console.WriteLine("");
             Console.WriteLine($"Число значений в таблице: {maxNodeNumber + 1}");
             
             Console.WriteLine("Исходная таблица значений функции:");
@@ -209,6 +221,7 @@ namespace Interpolation
             Console.WriteLine($"Абсолютная фактическая погрешность для формы Лагранжа: {actualInaccuracyOfLagrange}");
             Console.WriteLine($"Значение интерполяционнго многочлена в форме Ньютона в Х: {valueOfNewtonsInX}");
             Console.WriteLine($"Абсолютная фактическая погрешность для формы Ньютона: {actualInaccuracyOfNewtons}");
+            Console.WriteLine();
         }
 
         private static void PrintTable(Dictionary<double, double> table)
@@ -217,6 +230,7 @@ namespace Interpolation
             {
                 Console.WriteLine($"{key.ToFormattedString(4)} {table[key].ToFormattedString(8)}");
             }
+            Console.WriteLine();
         }
     }
 }
