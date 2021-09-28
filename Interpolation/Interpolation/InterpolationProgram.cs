@@ -149,8 +149,7 @@ namespace Interpolation
         {
             do
             {
-                Console.Write($"Введите степень N (N <= {maxNodeNumber}) интерполяционного многочлена, " +
-                    $"который будет построен для того чтобы найти значение в точке x: ");
+                Console.Write($"Введите степень N (N <= {maxNodeNumber}) интерполяционного многочлена: ");
                 var isAnInteger = int.TryParse(Console.ReadLine(), out polynomialDegree);
                 var errorMessage = !isAnInteger
                     ? "N должно быть целым"
@@ -225,9 +224,10 @@ namespace Interpolation
 
         private static void PrintTable(Dictionary<double, double> table)
         {
+            Console.WriteLine("    x          f(x)      ");
             foreach (var key in table.Keys.OrderBy(k => k))
             {
-                Console.WriteLine($"{key.ToFormattedString(4)} {table[key].ToFormattedString(8)}");
+                Console.WriteLine($"{key.ToFormattedString(8)}  {table[key].ToFormattedString(8)}");
             }
             Console.WriteLine();
         }
