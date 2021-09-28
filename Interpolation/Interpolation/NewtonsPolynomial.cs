@@ -33,12 +33,12 @@ namespace Interpolation
             var v = 0.0;
             for (var i = 0; i < SortedTable.Count; ++i)
             {
-                var coefficient = 1.0;
+                var acc = DividedDifferencesTable[0][i];
                 for (var j = 0; j < i; ++j)
                 {
-                    coefficient *= x - SortedTable[j].Key;
+                    acc *= x - SortedTable[j].Key;
                 }
-                v += DividedDifferencesTable[0][i] * coefficient;
+                v += acc;
             }
             value = v;
 
