@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InverseInterpolation", "InverseInterpolation\InverseInterpolation.csproj", "{0871B5A4-937B-448B-9FA2-CB4F8E6C2101}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0871B5A4-937B-448B-9FA2-CB4F8E6C2101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0871B5A4-937B-448B-9FA2-CB4F8E6C2101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0871B5A4-937B-448B-9FA2-CB4F8E6C2101}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0871B5A4-937B-448B-9FA2-CB4F8E6C2101}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ED9DBCAE-2538-42CD-AB94-C70ABCE7FFDD}
+	EndGlobalSection
+EndGlobal
