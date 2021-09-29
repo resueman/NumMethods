@@ -4,9 +4,9 @@ namespace NumericalDifferentiation
 {
     class ProgramFindingDerivatives
     {
-        private int maxNodeNumber; // m // 0-based
-        private double startPoint; // a
-        private double stepLength; // h
+        private int maxNodeNumber = 10; // m // 0-based
+        private double startPoint = 0.5; // a
+        private double stepLength = 0.1; // h
         private Func<double, double> function = x => Math.Pow(Math.E, 4.5 * x);
         private Func<double, double> derivative1 = x => 4.5 * Math.Pow(Math.E, 4.5 * x);
         private Func<double, double> derivative2 = x => 20.25 * Math.Pow(Math.E, 4.5 * x);
@@ -19,14 +19,12 @@ namespace NumericalDifferentiation
             while (true)
             {
                 var useUserParameters = WouldEnterParameters();
-                if (!useUserParameters)
+                if (useUserParameters)
                 {
-                    return;
+                    ReadMaxNodeNumber();
+                    ReadStartPoint();
+                    ReadStepLength();
                 }
-
-                ReadMaxNodeNumber();
-                ReadStartPoint();
-                ReadStepLength();
 
                 var table = new double[maxNodeNumber + 1, 6];
                 for (var i = 0; i <= maxNodeNumber; ++i)
@@ -65,21 +63,21 @@ namespace NumericalDifferentiation
         private static bool WouldEnterParameters()
         {
             Console.WriteLine("Хотите ли вы ввести параметры? Введите 'Да' или 'Нет'");
-            var userChoice = Console.ReadLine();
-            while (userChoice != "Да" && userChoice != "Нет")
+            var userChoice = Console.ReadLine().ToLower();
+            while (userChoice != "да" && userChoice != "нет")
             {
                 Console.WriteLine("Непонятно :)");
                 Console.WriteLine("Хотите ли вы ввести параметры? Введите 'Да' или 'Нет'");
                 userChoice = Console.ReadLine();
             }
-            return userChoice == "Да";
+            return userChoice == "да";
         }
 
         private void ReadMaxNodeNumber()
         {
             do
             {
-                Console.Write("Введите максимальный номер узла M: ");
+                Console.Write("Введите максимальный номер узла M начиная с 0: ");
                 var isAnInteger = int.TryParse(Console.ReadLine(), out maxNodeNumber);
                 var errorMessage = !isAnInteger
                     ? "M должно быть вещественным числом"
