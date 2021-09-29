@@ -54,7 +54,7 @@ namespace NumericalDifferentiation
 
         private void PrintTable(double[,] table)
         {
-            Console.WriteLine(string.Format("|{0,25}|{1,25}|{2,25}|{3,25}|{4,25}|{5,25}|", "xi", "f(xi)", "f'(xi)nd", "f'(xi)e - f'(xi)nd", "f''(xi)nd", "f''(xi)e - f''(xi)nd"));
+            Console.WriteLine(string.Format("|{0,25}|{1,25}|{2,25}|{3,25}|{4,25}|{5,25}|", "xi", "f(x_i)", "f'(x_i)чд", "|f'(xi)т - f'(xi)чд|", "f''(xi)чд", "|f''(xi)т - f''(xi)чд|"));
             for (var i = 0; i <= maxNodeNumber; i++)
             {
                 Console.WriteLine(string.Format("|{0,25}|{1,25}|{2,25}|{3,25}|{4,25}|{5,25}|", table[i, 0], table[i, 1], table[i, 2], table[i, 3], table[i, 4], table[i, 5]));
