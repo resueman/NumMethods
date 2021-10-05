@@ -117,24 +117,47 @@ namespace InverseInterpolation.UI
             Console.WriteLine();
         }
 
-        public void ReadPrecisionDegree(out double precisionDegree)
+        public void ReadPrecision(out double precision)
         {
+            double precisionBase;
+            double precisionDegree;
             do
             {
-                Console.Write($"Введите степень 10 для получения точности: ");
-                var isAnDouble = double.TryParse(Console.ReadLine(), out precisionDegree);
-                var errorMessage = !isAnDouble
-                    ? "Степень должна быть числом"
+                Console.WriteLine("Ввод точности");
+                Console.Write("Введите основание точности: ");
+                var isADouble = double.TryParse(Console.ReadLine(), out precisionBase);
+                var errorMessage = !isADouble
+                    ? "Значение основания точности должно быть вещественным или целым числом"
+                    : precisionBase <= 0
+                        ? "Значение основания точности должно быть больше 0"
+                        : "";
+
+                if (string.IsNullOrEmpty(errorMessage))
+                {
+                    break;
+                }
+                Console.WriteLine();
+                Console.WriteLine(errorMessage + ", попробуйте ввести основание точности еще раз\n");
+            } while (true);
+
+            do
+            {
+                Console.Write("Введите степень ε: ");
+                var isADouble = double.TryParse(Console.ReadLine(), out precisionDegree);
+                var errorMessage = !isADouble
+                    ? "Значение степени точности должно быть вещественным или целым числом"
                     : "";
 
                 if (string.IsNullOrEmpty(errorMessage))
                 {
-                    precisionDegree = Math.Pow(10, precisionDegree);
                     break;
                 }
-                Console.WriteLine(errorMessage + ", попробуйте ввести степень еще раз\n");
+                Console.WriteLine();
+                Console.WriteLine(errorMessage + ", попробуйте ввести степень точности еще раз\n");
             } while (true);
             Console.WriteLine();
+
+            precision = Math.Pow(precisionBase, precisionDegree);
         }
 
         public void ReadPoint(out double point)

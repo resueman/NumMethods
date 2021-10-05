@@ -64,7 +64,7 @@ namespace InverseInterpolation
                 {
                     ui.ReadPoint(out targetFunctionValue);
                     ui.ReadPolynomialDegree(maxNodeNumber, out polynomialDegree);
-                    ui.ReadPrecisionDegree(out precision);
+                    ui.ReadPrecision(out precision);
                 }
 
                 var nearestSortedNodesValuesTable = GetNearestSortedNodesValuesTable(tableWithPredefinedValues, targetFunctionValue, polynomialDegree);
@@ -91,7 +91,10 @@ namespace InverseInterpolation
 
                 var polynomialForInverseMethod = new LagrangePolynomial(nearestSortedNodesValuesInverseTable);
                 var valueOfLagrangeInF = polynomialForInverseMethod.GetValue(targetFunctionValue);
-                var inverseFunctionInterpolationMethodResult = new InverseInterpolationResult(valueOfLagrangeInF, Math.Abs(function(valueOfLagrangeInF) - targetFunctionValue));
+
+                var v = function(valueOfLagrangeInF);
+                var absDisrep = Math.Abs(v - targetFunctionValue);
+                var inverseFunctionInterpolationMethodResult = new InverseInterpolationResult(valueOfLagrangeInF, absDisrep);
 
                 PrintAnalytics(rootSearchingMethodResult, inverseFunctionInterpolationMethodResult);
             }
