@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalculationWithCompoundQuad
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{FDDED5D4-A52C-4716-976F-8EFB75D2B1FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleQuadratureFormulasTests", "SimpleQuadratureFormulasTests\SimpleQuadratureFormulasTests.csproj", "{F70CDACC-FF83-4653-9595-E624FE68B3D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleQuadratureFormulasTests", "SimpleQuadratureFormulasTests\SimpleQuadratureFormulasTests.csproj", "{F70CDACC-FF83-4653-9595-E624FE68B3D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

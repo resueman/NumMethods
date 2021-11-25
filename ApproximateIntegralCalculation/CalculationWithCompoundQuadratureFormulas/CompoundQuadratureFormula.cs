@@ -5,24 +5,20 @@ namespace CalculationWithCompoundQuadratureFormulas
 {
     public class CompoundQuadratureFormula
     {
-        public CompoundQuadratureFormula(Func<double> formula, string name, Func<double> theoreticalError)
+        public CompoundQuadratureFormula(Func<double> formula, string name, Func<double> theoreticalError, int algebraicPrecision)
         {
-            this.formula = formula;
-            TheoreticalError = theoreticalError;
+            CalculateIntegral = formula;
+            CalculateTheoreticalError = theoreticalError;
             Name = name;
+            AlgebraicPrecision = algebraicPrecision;
         }
-
-        private Func<double> formula;
 
         public string Name { get; private set; }
 
-        public Func<double> TheoreticalError { get; private set; }
+        public Func<double> CalculateIntegral { get; private set; }
 
-        public (double Actual, double AbsoluteActualError) CalculateIntegral(Function function, Segment segment)
-        {
-            var actual = formula();
-            var absoluteActualError = Math.Abs(actual - function.CountIntegral(segment));
-            return (actual, absoluteActualError);
-        }
+        public Func<double> CalculateTheoreticalError { get; private set; }
+
+        public int AlgebraicPrecision { get; private set; }
     }
 }
