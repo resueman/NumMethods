@@ -1,12 +1,11 @@
-﻿using System;
-
-namespace HighestAlgebraicDegreeOfAccuracyQuadratureFormulas
+﻿namespace HighestAlgebraicDegreeOfAccuracyQuadratureFormulas
 {
     class Program
     {
         static void Main(string[] args)
         {
-            var program = new HADoAQFProgram();
+            //var program = new GaussQuadratureFormulaProgram();
+            var program = new MellerQuadratureFormulaProgram();
             program.Start();
         }
     }

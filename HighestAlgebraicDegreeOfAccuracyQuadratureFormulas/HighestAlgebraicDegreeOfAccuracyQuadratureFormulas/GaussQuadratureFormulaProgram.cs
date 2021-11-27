@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace HighestAlgebraicDegreeOfAccuracyQuadratureFormulas
 {
-    public class HADoAQFProgram
+    public class GaussQuadratureFormulaProgram
     {
         private List<Func<double, double>> LejandrePolynomials;
         private List<GaussQuadratureFormula> GaussQuadratureFormulas;
@@ -14,7 +14,7 @@ namespace HighestAlgebraicDegreeOfAccuracyQuadratureFormulas
         private Function function;
         private List<(int K, double value)> integralValues;
         
-        public HADoAQFProgram()
+        public GaussQuadratureFormulaProgram()
         {
             function = new Function
                 ("1 / sqrt((1 + x ^ 2) * (4 + 3 * x ^ 2))",
