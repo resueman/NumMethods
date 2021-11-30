@@ -60,9 +60,10 @@ namespace CalculationWithSimpleQuadratureFormulas
             LeftRectangle = new SimpleQuadratureFormula((f, s) => (s.Right - s.Left) * f(s.Left), "КФ левого прямоугольника");
             RightRectangle = new SimpleQuadratureFormula((f, s) => (s.Right - s.Left) * f(s.Right), "КФ правого прямоугольника");
             MiddleRectangle = new SimpleQuadratureFormula((f, s) => (s.Right - s.Left) * f((s.Left + s.Right) / 2), "КФ среднего прямоугольника");
-            Trapezium = new SimpleQuadratureFormula((f, s) => (s.Right - s.Left) * (f(s.Left) + f(s.Right)) / 2, "КФ трапеции");
-            Simpson = new SimpleQuadratureFormula((f, s) => (s.Right - s.Left) * (f(s.Left) + 4 * f((s.Left + s.Right) / 2) + f(s.Right)) / 6, "КФ Симпсона");
-            ThreeEighths = new SimpleQuadratureFormula((f, s) => (s.Right - s.Left) * (f(s.Left) + 3 * f((2 * s.Left + s.Right) / 3) + 3 * f((s.Left + 2 * s.Right) / 3) + f(s.Right)) / 8, "КФ 3/8");
+            Trapezium = new SimpleQuadratureFormula((f, s) => (s.Right - s.Left) / 2 * (f(s.Left) + f(s.Right)), "КФ трапеции");
+            Simpson = new SimpleQuadratureFormula((f, s) => (s.Right - s.Left) / 6  * (f(s.Left) + 4 * f((s.Left + s.Right) / 2) + f(s.Right)), "КФ Симпсона");
+            Func<Func<double, double>, Segment, double> func = (f, s) => (s.Right - s.Left) * ((f(s.Left) + 3 * f((s.Right - s.Left) / 3 + s.Left) + 3 * f(2 * (s.Right - s.Left) / 3 + s.Left) + f(s.Right)) / 8);
+            ThreeEighths = new SimpleQuadratureFormula(func, "КФ 3/8");
         }
 
         public void Start()
