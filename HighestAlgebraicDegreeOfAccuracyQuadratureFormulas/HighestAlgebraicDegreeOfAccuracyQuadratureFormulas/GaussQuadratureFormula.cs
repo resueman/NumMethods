@@ -44,22 +44,5 @@ namespace HighestAlgebraicDegreeOfAccuracyQuadratureFormulas
             }
             return value;
         }
-
-        public void PrintNodeCoefficientsPairs()
-        {
-            Console.WriteLine($"N = {NodeCoefficientPairs.Count}");
-            Console.WriteLine("-------------------------------------------------");
-
-            var k = 1;
-            foreach (var (x_k, A_k) in NodeCoefficientPairs)
-            {
-                Console.WriteLine(string.Format("|{0,23}|{1,23}|", $"x_{k}          ", $"A_{k}          "));
-                Console.WriteLine("-------------------------------------------------");
-                Console.WriteLine(string.Format("|{0,23}|{1,23}|", x_k, A_k));
-                Console.WriteLine("-------------------------------------------------");
-                ++k;
-            }
-            Console.WriteLine($"Checksum: {CheckSum}\n\n");
-        }
     }
 }

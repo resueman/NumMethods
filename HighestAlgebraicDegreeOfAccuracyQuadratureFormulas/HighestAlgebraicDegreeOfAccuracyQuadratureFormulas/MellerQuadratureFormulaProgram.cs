@@ -58,7 +58,8 @@ namespace HighestAlgebraicDegreeOfAccuracyQuadratureFormulas
         {
             Console.WriteLine($"N = {n}");
             PrintNodeCoefficientPairs(n, roots);/////////////////////////
-            Console.WriteLine($"Значение интеграла: {integralValue}\n\n");
+            Console.WriteLine($"Значение интеграла: {integralValue}");
+            Console.WriteLine("Значение (м.пакет): 7,161528439050064\n\n");
         }
 
         private void PrintNodeCoefficientPairs(int n, List<double> roots)

@@ -17,7 +17,7 @@ namespace HighestAlgebraicDegreeOfAccuracyQuadratureFormulas
         public GaussQuadratureFormulaProgram()
         {
             function = new Function
-                ("1 / sqrt((1 + x ^ 2) * (4 + 3 * x ^ 2))",
+                ("1 * 1 / sqrt((1 + x ^ 2) * (4 + 3 * x ^ 2))",
                 x => 1 / Math.Sqrt((1 + Math.Pow(x, 2)) * (4 + 3 * Math.Pow(x, 2))),
                 y => 0.402183050616033);
 
@@ -28,8 +28,7 @@ namespace HighestAlgebraicDegreeOfAccuracyQuadratureFormulas
         {
             Console.WriteLine($"Нахождение интеграла функции: {function.StringRepresentation} по КФ Гаусса\n");
 
-            var ui = new UserInteractionInterface();
-            var n = 8; //ui.ReadN();
+            var n = 8;
 
             LejandrePolynomials = LejandrePolynomialsBuilder.BuildFrom1ToN(n);
             for (var k = 1; k <= n; ++k)
@@ -107,7 +106,7 @@ namespace HighestAlgebraicDegreeOfAccuracyQuadratureFormulas
 
         private void PrintIntegralValues(Segment s)
         {
-            Console.WriteLine($"Integral: {function.StringRepresentation}\nSegment: [{s.Left}; {s.Right}]\n");
+            Console.WriteLine($"Integral: {function.StringRepresentation}\nSegment: [{s.Left}; {s.Right}]\nValue (for [0; 1]): {0.4021830506160328}\n");
             Console.WriteLine("-------------------------------");
             Console.WriteLine(string.Format("|{0,5}|{1,23}|", "K  ", "Value          "));
             Console.WriteLine("-------------------------------");

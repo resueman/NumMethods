@@ -46,11 +46,11 @@ namespace Tests
             var formula = GaussQuadratureFormulas.First(f => f.N == 3);
             var functions = new List<Function>
             {
-                Functions.ZeroDegreeFunction,
-                Functions.FirstDegreePolynomial,
-                Functions.SecondDegreePolynomial,
-                Functions.ThirdDegreePolynomial,
-                Functions.FourthDegreeFunction,
+                //Functions.ZeroDegreeFunction,
+                //Functions.FirstDegreePolynomial,
+                //Functions.SecondDegreePolynomial,
+                //Functions.ThirdDegreePolynomial,
+                //Functions.FourthDegreeFunction,
                 Functions.FivthDegreeFunction,
             };
 
@@ -66,13 +66,13 @@ namespace Tests
             var formula = GaussQuadratureFormulas.First(f => f.N == 4);
             var functions = new List<Function>
             {
-                Functions.ZeroDegreeFunction,
-                Functions.FirstDegreePolynomial,
-                Functions.SecondDegreePolynomial,
-                Functions.ThirdDegreePolynomial,
-                Functions.FourthDegreeFunction,
-                Functions.FivthDegreeFunction,
-                Functions.SixthDegreeFunction,
+                //Functions.ZeroDegreeFunction,
+                //Functions.FirstDegreePolynomial,
+                //Functions.SecondDegreePolynomial,
+                //Functions.ThirdDegreePolynomial,
+                //Functions.FourthDegreeFunction,
+                //Functions.FivthDegreeFunction,
+                //Functions.SixthDegreeFunction,
                 Functions.SeventhDegreeFunction
             };
 
@@ -88,15 +88,15 @@ namespace Tests
             var formula = GaussQuadratureFormulas.First(f => f.N == 5);
             var functions = new List<Function>
             {
-                Functions.ZeroDegreeFunction,
-                Functions.FirstDegreePolynomial,
-                Functions.SecondDegreePolynomial,
-                Functions.ThirdDegreePolynomial,
-                Functions.FourthDegreeFunction,
-                Functions.FivthDegreeFunction,
-                Functions.SixthDegreeFunction,
-                Functions.SeventhDegreeFunction,
-                Functions.EighthDegreeFunction,
+                //Functions.ZeroDegreeFunction,
+                //Functions.FirstDegreePolynomial,
+                //Functions.SecondDegreePolynomial,
+                //Functions.ThirdDegreePolynomial,
+                //Functions.FourthDegreeFunction,
+                //Functions.FivthDegreeFunction,
+                //Functions.SixthDegreeFunction,
+                //Functions.SeventhDegreeFunction,
+                //Functions.EighthDegreeFunction,
                 Functions.NinethDegreeFunction,
             };
 
