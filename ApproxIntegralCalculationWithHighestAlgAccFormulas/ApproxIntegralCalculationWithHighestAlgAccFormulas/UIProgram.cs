@@ -65,7 +65,10 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
         {
             Console.WriteLine("Вычисление интеграла с помощью КФ Гауссового типа");
             var integral = GaussTypeQuadratureFormulaBuilder.CalculateIntegral(segment, N, integrableFunction);
-            Console.WriteLine($"value: {integral}");
+
+            Console.WriteLine("------------------------------------------");
+            Console.WriteLine(string.Format("|{0,13}|{1,26}|", "", string.Format("{0:F20}  ", integral)));
+            Console.WriteLine("------------------------------------------");
         }
 
         private List<int> ReadSeveralNubersOfSegmentPartition()
@@ -110,14 +113,13 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
         {
             Console.WriteLine($"Integral: {integrableFunction.StringRepresentation}\nSegment: [{s.Left}; {s.Right}]\nN = {n}\n");
             Console.WriteLine("------------------------------------------");
-            Console.WriteLine(string.Format("|{0,13}|{1,25}|", "m    ", "Value          "));
+            Console.WriteLine(string.Format("|{0,13}|{1,26}|", "m    ", "Value          "));
             Console.WriteLine("------------------------------------------");
             foreach (var (m, value) in integralValues)
             {
-                Console.WriteLine(string.Format("|{0,13}|{1,25}|", $"{m}    ", string.Format("{0:F20}  ", value)));
+                Console.WriteLine(string.Format("|{0,13}|{1,26}|", $"{m}    ", string.Format("{0:F20}  ", value)));
                 Console.WriteLine("------------------------------------------");
             }
-            Console.WriteLine("\n\n");
         }
     }
 }
