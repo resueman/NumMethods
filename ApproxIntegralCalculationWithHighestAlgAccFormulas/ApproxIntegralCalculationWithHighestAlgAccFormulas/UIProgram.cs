@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ApproxIntegralCalculationWithHighestAlgAccFormulas.GaussTypeQF;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,34 +9,62 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
 {
     class UIProgram
     {
-        private Function function;
+        private Function f;
+        private Function p;
+        private Function integrableFunction;
 
         public UIProgram()
         {
-            function = new Function
-                ("1 * sin(x) * x ^ (1 / 4)",
-                x => Math.Sin(x) * Math.Sqrt(Math.Sqrt(x)));
+            f = new Function(
+                "sin(x)", 
+                x => Math.Sin(x));
+
+            p = new Function(
+                "x ^ 0.25", 
+                x => Math.Sqrt(Math.Sqrt(x)));
+            
+            integrableFunction = new Function(
+                "1 * sin(x) * x ^ (1 / 4)",
+                x => p.Func(x) * f.Func(x));
         }
 
         public void Start()
         {
+            Console.WriteLine("Приближенное вычисление интегралов с помощью КФ НАСТ");
             while (true)
             {
                 var segment = new Segment();
                 var N = ReadNodeNumber();
                 var partitionNumbers = ReadSeveralNubersOfSegmentPartition();
-                
-                var cgqf = new CompoundGaussQF(N);
-                cgqf.GaussQuadratureFormula.PrintNodeCoefficientsPairs();
-                
-                var integralValues = new List<(int m, double value)>();
-                foreach (var m in partitionNumbers)
-                {
-                    var integral = cgqf.CalculateIntegral(m, segment, function);
-                    integralValues.Add((m, integral));
-                }
-                PrintIntegralValues(integralValues, segment, N);
+
+                /// COMPOUND GAUSS QUADRATURE FORMULA
+                RunCompoundGaussQuadratureFormulaIntegralCalculation(segment, N, partitionNumbers);
+
+                /// BUILDING GAUSS TYPE FORMULA
+                RunGaussTypeQuadratureFormulaIntegralCalculation(segment, N);
             }
+        }
+
+        private void RunCompoundGaussQuadratureFormulaIntegralCalculation(Segment segment, int N, List<int> partitionNumbers)
+        {
+            Console.WriteLine("Вычисление интеграла с помощью составной КФ Гаусса");
+            var cgqf = new CompoundGaussQF(N);
+            cgqf.GaussQuadratureFormula.PrintNodeCoefficientsPairs();
+
+            var integralValues = new List<(int m, double value)>();
+            foreach (var m in partitionNumbers)
+            {
+                var integral = cgqf.CalculateIntegral(m, segment, integrableFunction);
+                integralValues.Add((m, integral));
+            }
+            PrintIntegralValues(integralValues, segment, N);
+        }
+
+        private void RunGaussTypeQuadratureFormulaIntegralCalculation(Segment segment, int N)
+        {
+            Console.WriteLine("Вычисление интеграла с помощью КФ Гауссового типа");
+            var integral = GaussTypeQuadratureFormulaBuilder.CalculateIntegral(segment, N, integrableFunction);
+            Console.WriteLine($"value: {integral}");
         }
 
         private List<int> ReadSeveralNubersOfSegmentPartition()
@@ -76,7 +107,7 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
 
         private void PrintIntegralValues(List<(int m, double value)> integralValues, Segment s, int n)
         {
-            Console.WriteLine($"Integral: {function.StringRepresentation}\nSegment: [{s.Left}; {s.Right}]\nN = {n}\n");
+            Console.WriteLine($"Integral: {integrableFunction.StringRepresentation}\nSegment: [{s.Left}; {s.Right}]\nN = {n}\n");
             Console.WriteLine("------------------------------------------");
             Console.WriteLine(string.Format("|{0,13}|{1,25}|", "m    ", "Value          "));
             Console.WriteLine("------------------------------------------");

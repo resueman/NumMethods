@@ -23,7 +23,7 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
 
         public string StringRepresentation { get; private set; }
 
-        public string CountIntegral(Segment segment)
-            => integralFunction != null ? $"{integralFunction(segment.Right) - integralFunction(segment.Left)}" : "???";
+        public double CountIntegral(Segment segment)
+            => integralFunction != null ? integralFunction(segment.Right) - integralFunction(segment.Left) : 0;
     }
 }
