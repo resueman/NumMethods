@@ -30,7 +30,7 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
 
         public void Start()
         {
-            Console.WriteLine("Приближенное вычисление интегралов с помощью КФ НАСТ");
+            Console.WriteLine("Приближенное вычисление интегралов с помощью КФ НАСТ\n");
             while (true)
             {
                 var segment = new Segment();
@@ -42,6 +42,7 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
 
                 /// BUILDING GAUSS TYPE FORMULA
                 RunGaussTypeQuadratureFormulaIntegralCalculation(segment, N);
+                Console.WriteLine("\n\n");
             }
         }
 

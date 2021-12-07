@@ -81,8 +81,9 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas.GaussTypeQF
             var degree = N - 1;
             for (var i = 0; i < N; ++i)
             {
-                var local = i;
-                Func<double, double> addendum = x => coefficients[local] * Math.Pow(x, degree);
+                var localI = i;
+                var localDegree = degree;
+                Func<double, double> addendum = x => coefficients[localI] * Math.Pow(x, localDegree);
                 addendums.Add(addendum);
                 --degree;
             }
@@ -107,14 +108,12 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas.GaussTypeQF
                 matrix[0, j] = 1;
             }
 
-            var lineNumber = 1;
-            for (var i = N - 1; i < 2 * N - 1; ++i)
+            for (var i = 1; i <= N - 1; ++i)
             {
                 for (var j = 0; j < N; ++j)
                 {
-                    matrix[lineNumber, j] = Math.Pow(roots[j], lineNumber);
+                    matrix[i, j] = Math.Pow(roots[j], i);
                 }
-                ++lineNumber;
             }
 
             return matrix;
@@ -125,7 +124,7 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas.GaussTypeQF
             var matrix = new double[N];
             for (var i = 0; i < N; ++i)
             {
-                matrix[i] = moments[N];
+                matrix[i] = moments[i];
             }
             return matrix;
         }
