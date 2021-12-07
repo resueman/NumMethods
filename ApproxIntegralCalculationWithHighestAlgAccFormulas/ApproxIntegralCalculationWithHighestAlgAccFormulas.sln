@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApproxIntegralCalculationWithHighestAlgAccFormulas", "ApproxIntegralCalculationWithHighestAlgAccFormulas\ApproxIntegralCalculationWithHighestAlgAccFormulas.csproj", "{270ECAC6-F0C3-4274-8E47-A536200317A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{8EB8AE8A-8AB0-4B56-82F4-DBEB158BB9B7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{270ECAC6-F0C3-4274-8E47-A536200317A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{270ECAC6-F0C3-4274-8E47-A536200317A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{270ECAC6-F0C3-4274-8E47-A536200317A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{270ECAC6-F0C3-4274-8E47-A536200317A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EB8AE8A-8AB0-4B56-82F4-DBEB158BB9B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EB8AE8A-8AB0-4B56-82F4-DBEB158BB9B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EB8AE8A-8AB0-4B56-82F4-DBEB158BB9B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EB8AE8A-8AB0-4B56-82F4-DBEB158BB9B7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1FC6A183-64DA-40AB-902E-78A8902F79BD}
+	EndGlobalSection
+EndGlobal
