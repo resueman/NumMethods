@@ -11,7 +11,7 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
         private readonly double precision;
         private readonly double separationStepLength;
 
-        private const double secantMethodMaxIterations = 500;
+        private const double secantMethodMaxIterations = 5000;
 
         public RootFinder(Func<double, double> function, Segment segment,
             double precision, int separationStepCount)

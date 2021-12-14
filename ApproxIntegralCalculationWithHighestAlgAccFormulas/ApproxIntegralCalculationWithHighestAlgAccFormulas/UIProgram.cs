@@ -50,7 +50,7 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
         {
             Console.WriteLine("Вычисление интеграла с помощью составной КФ Гаусса");
             var cgqf = new CompoundGaussQF(N);
-            cgqf.GaussQuadratureFormula.PrintNodeCoefficientsPairs();
+            cgqf.GaussQuadratureFormula.PrintNodeCoefficientsPairs(segment);
 
             var integralValues = new List<(int m, double value)>();
             foreach (var m in partitionNumbers)
@@ -64,11 +64,7 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
         private void RunGaussTypeQuadratureFormulaIntegralCalculation(Segment segment, int N)
         {
             Console.WriteLine("Вычисление интеграла с помощью КФ Гауссового типа");
-            var integral = GaussTypeQuadratureFormulaBuilder.CalculateIntegral(segment, N, integrableFunction);
-
-            Console.WriteLine("------------------------------------------");
-            Console.WriteLine(string.Format("|{0,13}|{1,26}|", "", string.Format("{0:F20}  ", integral)));
-            Console.WriteLine("------------------------------------------");
+            var integral = GaussTypeQuadratureFormulaBuilder.CalculateIntegral(segment, N, integrableFunction, f);
         }
 
         private List<int> ReadSeveralNubersOfSegmentPartition()

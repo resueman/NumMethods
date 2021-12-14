@@ -2,6 +2,7 @@
 
 namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
 {
+
     public class Function
     {
         public Function(string funcStringRepresentation,

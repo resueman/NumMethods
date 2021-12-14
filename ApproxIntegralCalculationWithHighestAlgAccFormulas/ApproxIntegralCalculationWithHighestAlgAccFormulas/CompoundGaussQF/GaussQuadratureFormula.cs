@@ -34,13 +34,18 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
 
         public double CheckSum => NodeCoefficientPairs.Sum(p => p.A_k);
 
-        public void PrintNodeCoefficientsPairs()
+        public void PrintNodeCoefficientsPairs(Segment segment = null)
         {
             Console.WriteLine($"N = {NodeCoefficientPairs.Count}");
             Console.WriteLine("-------------------------------------------------");
 
+            var q = (segment.Right - segment.Left) / 2;
+            List<(double x_k, double A_k)> ncpairs = segment == null ? NodeCoefficientPairs : NodeCoefficientPairs
+                    .Select(p => (segment.Left + (p.x_k + 1) * q, p.A_k * q))
+                    .ToList();
+
             var k = 1;
-            foreach (var (x_k, A_k) in NodeCoefficientPairs)
+            foreach (var (x_k, A_k) in ncpairs)
             {
                 Console.WriteLine(string.Format("|{0,23}|{1,23}|", $"x_{k}          ", $"A_{k}          "));
                 Console.WriteLine("-------------------------------------------------");
@@ -48,7 +53,7 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas
                 Console.WriteLine("-------------------------------------------------");
                 ++k;
             }
-            Console.WriteLine($"Checksum: {CheckSum}\n\n");
+            Console.WriteLine($"Checksum: {ncpairs.Sum(p => p.A_k)}\n\n");
         }
     }
 }

@@ -10,16 +10,51 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas.GaussTypeQF
 {
     class GaussTypeQuadratureFormulaBuilder
     {
-        public static double CalculateIntegral(Segment segment, int N, Function function)
+        public static double CalculateIntegral(Segment segment, int N, Function integrableFunction, Function f)
         {
             var moments = CalculateMoments(N, segment); // from 0 to 2 * n - 1 
             var orthogonalPolynomialCoefficients = CalculateOrthogonalPolynomialCoefficients(moments, N); // using moments
-            Func<double, double> orthogonalPolynomial = BuildOrthogonalPolynomial(orthogonalPolynomialCoefficients, N); //using polynomial coefficients
+            var (orthogonalPolynomial, stringRepresentation) = BuildOrthogonalPolynomial(orthogonalPolynomialCoefficients, N); //using polynomial coefficients
             
             var rootFinder = new RootFinder(orthogonalPolynomial, segment, Math.Pow(10, -14), 10000);
             var orthogonalPolynomialRoots = rootFinder.FindRoots().Select(ra => ra.Root).ToList(); // finds orthogonal polynomial roots using secant method 
             var quadratureFormulaCoefficients = FindQuadratureFormulaCoefficients(orthogonalPolynomialRoots, moments, N); //using orthogonal polynomial roots and moments
-            var integral = BuildGaussTypeQuadratureFormula(function, orthogonalPolynomialRoots, quadratureFormulaCoefficients); // using coefficients and root of ortogonal polynomial
+            var integral = BuildGaussTypeQuadratureFormula(f, orthogonalPolynomialRoots, quadratureFormulaCoefficients); // using coefficients and root of ortogonal polynomial
+
+            Console.WriteLine("------------------------------------------");
+            Console.WriteLine(string.Format("|{0,13}|{1,26}|", "", string.Format("{0:F20}  ", integral)));
+            Console.WriteLine("------------------------------------------\n");
+
+            Console.WriteLine("Моменты:");
+            var i = 0;
+            foreach (var moment in moments)
+            {
+                Console.WriteLine($"m_{i}: {moment}");
+                ++i;
+            }
+            Console.WriteLine();
+
+            Console.WriteLine($"Ортогональный относительно веса x ^ 0.25 и [{segment.Left}; {segment.Right}] многочлен:");
+            Console.WriteLine(stringRepresentation);
+            Console.WriteLine();
+
+            Console.WriteLine("Корни ортогонального многочлена:");
+            var k = 0;
+            foreach (var root in orthogonalPolynomialRoots)
+            {
+                Console.WriteLine($"x_{k}: {root}");
+                ++k;
+            }
+            Console.WriteLine();
+
+            Console.WriteLine("Коэффициенты КФ:");
+            k = 0;
+            foreach (var A_k in quadratureFormulaCoefficients)
+            {
+                Console.WriteLine($"A_{k}: {A_k}");
+                ++k;
+            }
+
             return integral;
         }
 
@@ -29,11 +64,11 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas.GaussTypeQF
             for (var i = 0; i < 2 * n; ++i)
             {
                 var k = i;
-                var degree = 1 / 4 + k;
+                var degree = 1 / 4.0 + k;
                 var function = new Function(
                     $"x ^ (0.25 + {k})", 
                     x => Math.Pow(x, degree), 
-                    y => Math.Pow(y, degree + 1) / (degree + 1));
+                    y => Math.Pow(y, degree + 1.0) / (degree + 1.0));
                 
                 var moment = function.CountIntegral(segment);
                 moments.Add(moment);
@@ -75,20 +110,23 @@ namespace ApproxIntegralCalculationWithHighestAlgAccFormulas.GaussTypeQF
             return matrix;
         }
 
-        private static Func<double, double> BuildOrthogonalPolynomial(List<double> coefficients, int N)
+        private static (Func<double, double> OrthogonalPolynomial, string Representation) BuildOrthogonalPolynomial(List<double> coefficients, int N)
         {
             var addendums = new List<Func<double, double>> { x => Math.Pow(x, N) };
             var degree = N - 1;
+            var stringRepresentation = $"x ^ {N}";
             for (var i = 0; i < N; ++i)
             {
                 var localI = i;
                 var localDegree = degree;
                 Func<double, double> addendum = x => coefficients[localI] * Math.Pow(x, localDegree);
+                var sign = coefficients[localI] > 0 ? '+' : '-';
+                stringRepresentation += $" {sign} {Math.Abs(coefficients[localI]).ToFormattedString(4)} * x ^ {localDegree}";
                 addendums.Add(addendum);
                 --degree;
             }
             Func<double, double> orthogonalPolynomial = x => addendums.Sum(a => a(x));
-            return orthogonalPolynomial;
+            return (orthogonalPolynomial, stringRepresentation);
         }
 
         private static List<double> FindQuadratureFormulaCoefficients(List<double> orthogonalPolynomialRoots, List<double> moments, int N)
